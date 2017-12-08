@@ -1,0 +1,142 @@
+<html>
+<head>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin=""/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+
+<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/esri-leaflet@2.1.1/dist/esri-leaflet.js" integrity="sha512-ECQqaYZke9cSdqlFG08zSkudgrdF6I1d8ViSa7I3VIszJyVqw4ng1G8sehEXlumdMnFYfzY0tMgdQa4WCs9IUw==" crossorigin=""></script>	
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+
+</head>
+
+	<style>
+		#map { height: 94% }
+		#icon { width: 25px; margin-right: 15}
+		#clear { margin-top: 25 }
+		#header { background-color: SlateGray; color: White; }
+		#showMe { padding-left: 10; padding-top: 15 }
+		#parkCard { margin-left: 10; margin-top: 25}
+		.search-queries { padding-left: 10 }
+	</style>
+<body>
+
+<nav id="header">
+	<div class="container-fluid">
+		<div>
+		<h3>City of Santa Monica Park Finder</h3>
+		</div>
+	</div>
+</nav>
+
+
+	<div class="row">
+		<div class="col-5 col-lg-3">
+			<h4 id="showMe">Show me parks with...</h4>
+			
+			<select class="search-queries selectpicker" name="search-queries" data-selected-text-format="count > 2" data-width="100%" multiple>
+				<option data-query="Picnic_Areas<>0">Picnic Areas</option>
+				<option data-query="Baseball_Fields<>0">Baseball Fields</option>
+				<option data-query="Basketball_Courts<>0">Basketball Courts</option>
+				<option data-query="Dog_Park<>0">Off-leash Dog Areas</option>
+			</select>
+			
+			<div>
+			<p id="showMe"><i>Pick from the list of park amenities to find parks that fit your needs. Select a park from the map to see more information about that park.</i></p>
+			</div>
+			
+			<div id="parkCard" class="panel panel-default parkCard">
+				<div class="panel-heading" id="cardHeading"></div>
+				<div class="panel-body">
+					<img src="http://www.fieldoperations.net/fileadmin/fo_uploads/projects/02_TongvaPark/PA-402-04.jpg" class="img-responsive img-rounded" alt="Park Image">
+					<h5><strong>Address</strong></h5>
+					<p id="parkAddress"></p>
+					<h5><strong>Hours</strong></h5>
+					<p>6:00AM - 10:00PM</p>
+					<p>Pnon odio euismod lacinia at quis risus sed vulputate odio ut enim blandit volutpat maecenas volutpat blandit aliquam etiam erat velit scelerisque in dictum non consectetur a erat nam at lectus urna duis convallis convallis tell</p>
+					<button type="button" class="btn btn-info btn-block">Make a facility reservation</button>
+				</div>
+			</div>
+
+			
+			
+			<!-- <div>
+			<button type="button" class="btn btn-primary" id="clear">Search</button>
+			<button type="button" class="btn btn-secondary" id="clear">Clear all filters</button>
+			</div>
+			
+			<input type="text" class="query-array" id="query-array" readonly /> -->
+			
+		</div>
+
+		
+		
+		<div id="map" class="col-12 col-sm-7 col-lg-9"></div>
+	</div>
+</div>
+
+<script>
+document.getElementById("parkCard").style.display = "none";
+$(document).ready(function() {
+
+
+var map = L.map('map').setView([34.021894, -118.470091], 14);
+		
+L.tileLayer('https://api.mapbox.com/styles/v1/zrobinsonsmgov/cjamvq7qj10342rn6fhmuxwbb/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoienJvYmluc29uc21nb3YiLCJhIjoiY2phbGQwZjN2MnNjejJ3cGxtNnBnbnBkMyJ9.alfULf_oFge64HXx6645lQ').addTo(map);
+
+L.esri.featureLayer({
+	url: 'http://csmgisweb.smgov.net/public/rest/services/public_park_bounds_with_amenities/MapServer/1',
+	style: function (feature) {
+		return {opacity: 0.25, color: 'green', weight: 1}
+	}
+}).addTo(map);
+	
+var amenities = L.esri.featureLayer({
+	url: 'http://csmgisweb.smgov.net/public/rest/services/public_park_bounds_with_amenities/MapServer/0',
+}).addTo(map);
+
+amenities.on('click', function (e) {
+	document.getElementById("cardHeading").innerHTML = "<h4><strong>" + e.layer.feature.properties.FAC_NAME + "</strong></h4>";
+	document.getElementById("parkAddress").innerHTML = e.layer.feature.properties.SITUS_ADDR;
+	document.getElementById("parkCard").style.display = "block";
+});
+	
+//amenities.bindPopup(function (layer) {
+	//return L.Util.template('<p>{FAC_NAME}</p>', layer.feature.properties);
+//});	
+
+$('select.search-queries').change(function() {
+	
+	
+	var amenityValue = $('select.search-queries').find(':selected').data('query');
+	$('.query-value').val(amenityValue);
+	
+	var count = $('.search-queries :selected').length;
+	$('.selected-num').val(count);
+	
+	var rr = [];
+	$('.search-queries :selected').each(function(i, selected){
+		rr[i] = $(selected).data('query');
+	});
+	
+	$('.query-array').val(rr.join(' AND '));
+	
+	var searchBy = rr.join(' AND ');
+	//var searchBy = document.getElementById('query-array')
+	
+	amenities.setWhere(searchBy);
+	
+	
+});
+		
+});
+
+</script>
+
+</body>
+</html>
