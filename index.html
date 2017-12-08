@@ -90,14 +90,14 @@ var map = L.map('map').setView([34.021894, -118.470091], 14);
 L.tileLayer('https://api.mapbox.com/styles/v1/zrobinsonsmgov/cjamvq7qj10342rn6fhmuxwbb/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoienJvYmluc29uc21nb3YiLCJhIjoiY2phbGQwZjN2MnNjejJ3cGxtNnBnbnBkMyJ9.alfULf_oFge64HXx6645lQ').addTo(map);
 
 L.esri.featureLayer({
-	url: 'http://csmgisweb.smgov.net/public/rest/services/public_park_bounds_with_amenities/MapServer/1',
+	url: 'https://csmgisweb.smgov.net/public/rest/services/public_park_bounds_with_amenities/MapServer/1',
 	style: function (feature) {
 		return {opacity: 0.25, color: 'green', weight: 1}
 	}
 }).addTo(map);
 	
 var amenities = L.esri.featureLayer({
-	url: 'http://csmgisweb.smgov.net/public/rest/services/public_park_bounds_with_amenities/MapServer/0',
+	url: 'https://csmgisweb.smgov.net/public/rest/services/public_park_bounds_with_amenities/MapServer/0',
 }).addTo(map);
 
 amenities.on('click', function (e) {
